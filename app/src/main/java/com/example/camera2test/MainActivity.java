@@ -52,28 +52,25 @@ import java.util.Arrays;
 public class MainActivity extends AppCompatActivity {
 
 
-    public static final String LOG_TAG = "myLogs";
-    public static Surface surface = null;
+    public static final String LOG_TAG = "MainActivity";
+    public static Surface surface;
 
-    CameraService[] myCameras = null;
+    CameraService[] myCameras;
 
-    private CameraManager mCameraManager = null;
+    private CameraManager mCameraManager;
     private final int CAMERA1 = 0;
 
-    private Button mButtonOpenCamera1 = null;
-    private Button mButtonStreamVideo = null;
-    private Button mButtonTStopStreamVideo = null;
-    public static TextureView mImageView = null;
+    public static TextureView mImageView;
     private HandlerThread mBackgroundThread;
-    private Handler mBackgroundHandler = null;
+    private Handler mBackgroundHandler;
 
-    private MediaCodec mCodec = null; // кодер
-    Surface mEncoderSurface; // Surface как вход данных для кодера
-    BufferedOutputStream outputStream;
-    ByteBuffer outPutByteBuffer;
-    DatagramSocket udpSocket;
-    String ip_address = "192.168.1.4";
-    InetAddress address;
+    private MediaCodec mCodec; // кодер
+    private Surface mEncoderSurface; // Surface как вход данных для кодера
+    private BufferedOutputStream outputStream;
+    private ByteBuffer outPutByteBuffer;
+    private DatagramSocket udpSocket;
+    private String ip_address = "192.168.43.170";
+    private InetAddress address;
     int port = 40002;
 
     private void startBackgroundThread() {
@@ -138,14 +135,13 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             udpSocket = new DatagramSocket();
-            Log.i(LOG_TAG, "  создали udp сокет");
+            Log.i(LOG_TAG, "Socket created");
         } catch (SocketException e) {
-            Log.i(LOG_TAG, " не создали udp сокет " + e.toString());
+            Log.i(LOG_TAG, "Cannot create UDP socket " + e.toString());
         }
 
         try {
             address = InetAddress.getByName(ip_address);
-            Log.i(LOG_TAG, "  есть адрес");
         } catch (Exception ignored) {
 
         }
@@ -336,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
             try {
                 DatagramPacket packet = new DatagramPacket(outDate, outDate.length, address, port);
                 udpSocket.send(packet);
-                Log.i(LOG_TAG, "отправился UDP пакет");
+                Log.i(LOG_TAG, Long.toString(System.currentTimeMillis()));
             } catch (IOException e) {
                 Log.i(LOG_TAG, " не отправился UDP пакет");
             }
