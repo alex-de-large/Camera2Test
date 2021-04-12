@@ -150,36 +150,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
 
-//        mButtonOpenCamera1.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                if (myCameras[CAMERA1] != null) {// открываем камеру
-//                    if (!myCameras[CAMERA1].isOpen()) ;
-//                }
-//            }
-//        });
-//
-//        mButtonStreamVideo.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
-//
-//
-//        mButtonTStopStreamVideo.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if (mCodec != null) {
-//                    Toast.makeText(MainActivity.this, " остановили стрим", Toast.LENGTH_SHORT).show();
-//                    myCameras[CAMERA1].stopStreamingVideo();
-//                }
-//            }
-//        });
-
-
-
         mCameraManager = (CameraManager) getSystemService(Context.CAMERA_SERVICE);
         try {
             myCameras = new CameraService[mCameraManager.getCameraIdList().length];
