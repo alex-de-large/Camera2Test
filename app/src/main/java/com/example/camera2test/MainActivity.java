@@ -1,45 +1,33 @@
 package com.example.camera2test;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.Context;
-import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
-
 import android.graphics.SurfaceTexture;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.hardware.camera2.CaptureRequest;
-
-
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.os.Build;
 import android.os.Bundle;
-
-
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.StrictMode;
 import android.util.Log;
 import android.view.Surface;
 import android.view.TextureView;
-import android.view.View;
-import android.widget.Button;
-import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.io.BufferedOutputStream;
-
-
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -198,7 +186,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(CameraDevice camera, int error) {
-                Log.i(LOG_TAG, "error! camera id:" + camera.getId() + " error:" + error);
+                Log.i(LOG_TAG, "error! camera id: " + camera.getId() + " error: " + error);
             }
         };
 
@@ -290,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
             mCodec = MediaCodec.createEncoderByType("video/avc"); // H264 кодек
 
         } catch (Exception e) {
-            Log.i(LOG_TAG, "а нету кодека");
+            Log.i(LOG_TAG, "Cannot create codec");
         }
 
         int width = 640; // ширина видео
@@ -312,7 +300,7 @@ public class MainActivity extends AppCompatActivity {
 
         mCodec.setCallback(new EncoderCallback());
         mCodec.start(); // запускаем кодер
-        Log.i(LOG_TAG, "запустили кодек");
+        Log.i(LOG_TAG, "Codec has been started");
 
     }
 
@@ -332,9 +320,8 @@ public class MainActivity extends AppCompatActivity {
             try {
                 DatagramPacket packet = new DatagramPacket(outDate, outDate.length, address, port);
                 udpSocket.send(packet);
-                Log.i(LOG_TAG, Long.toString(System.currentTimeMillis()));
             } catch (IOException e) {
-                Log.i(LOG_TAG, " не отправился UDP пакет");
+                Log.i(LOG_TAG, e.toString());
             }
             mCodec.releaseOutputBuffer(index, false);
         }
@@ -346,7 +333,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onOutputFormatChanged(MediaCodec codec, MediaFormat format) {
-            Log.i(LOG_TAG, "encoder output format changed: " + format);
+            Log.i(LOG_TAG, "Encoder output format changed: " + format);
         }
     }
 
