@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
     private BufferedOutputStream outputStream;
     private ByteBuffer outPutByteBuffer;
     private DatagramSocket udpSocket;
-    private String ip_address = "192.168.43.170";
+    private String ip_address = "192.168.43.52";
     private InetAddress address;
     int port = 40002;
 
@@ -264,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
-                mCodec.stop();
+//                mCodec.stop();
                 mCodec.release();
                 mEncoderSurface.release();
                 closeCamera();
@@ -281,10 +281,10 @@ public class MainActivity extends AppCompatActivity {
             Log.i(LOG_TAG, "Cannot create codec");
         }
 
-        int width = 640; // ширина видео
-        int height = 480; // высота видео
+        int width = 1280; // ширина видео
+        int height = 720; // высота видео
         int colorFormat = MediaCodecInfo.CodecCapabilities.COLOR_FormatSurface; // формат ввода цвета
-        int videoBitrate = 500000; // битрейт видео в bps (бит в секунду)
+        int videoBitrate = 5_000_000; // битрейт видео в bps (бит в секунду)
         int videoFramePerSecond = 20; // FPS
         int iframeInterval = 3; // I-Frame интервал в секундах
 
@@ -293,6 +293,8 @@ public class MainActivity extends AppCompatActivity {
         format.setInteger(MediaFormat.KEY_BIT_RATE, videoBitrate);
         format.setInteger(MediaFormat.KEY_FRAME_RATE, videoFramePerSecond);
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, iframeInterval);
+        format.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE,1024);
+
 
 
         mCodec.configure(format, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE); // конфигурируем кодек как кодер
@@ -313,17 +315,41 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onOutputBufferAvailable(MediaCodec codec, int index, MediaCodec.BufferInfo info) {
+            Log.d(LOG_TAG, Integer.toString(info.size));
             outPutByteBuffer = mCodec.getOutputBuffer(index);
-            byte[] outDate = new byte[info.size];
-            outPutByteBuffer.get(outDate);
+            byte[] outData = new byte[info.size];
+            outPutByteBuffer.get(outData);
 
-            try {
-                DatagramPacket packet = new DatagramPacket(outDate, outDate.length, address, port);
-                udpSocket.send(packet);
-            } catch (IOException e) {
-                Log.i(LOG_TAG, e.toString());
+            int count = 0;
+            int temp = outData.length ;
+
+            do {
+                byte[] ds;
+                temp -= 1024;
+
+                if (temp >= 0) {
+                    ds = new byte[1024];
+                }
+                else {
+                    ds = new byte[temp + 1024];
+                }
+
+                for (int i = 0; i < ds.length; i++) {
+                    ds[i]=outData[i + 1024 * count];
+                }
+
+                count=count+1;
+
+                try {
+                    DatagramPacket packet = new DatagramPacket(ds, ds.length, address, port);
+                    udpSocket.send(packet);
+                } catch (IOException e) {
+                    Log.i(LOG_TAG, e.toString());
+                }
+                mCodec.releaseOutputBuffer(index, false);
             }
-            mCodec.releaseOutputBuffer(index, false);
+            while (temp >= 0);
+            
         }
 
         @Override
